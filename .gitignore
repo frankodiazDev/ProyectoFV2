@@ -1,0 +1,9 @@
+# Archivos de sesion y estado de RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
