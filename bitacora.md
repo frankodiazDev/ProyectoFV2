@@ -72,3 +72,79 @@ desarrollo del proyecto, según lo exigido en `CLAUDE.md`.
 - `tam_commit`: 50 valores atípicos (negativos o `999999`) → `NA`.
 - `t_respuesta_h`: 47 valores negativos → `NA`.
 - `id_evento`: 139 filas con id duplicado (marcadas, no eliminadas).
+
+---
+
+## Prompt 2
+
+**Prompt textual:**
+> realiza la fase 2
+
+**Número de prompt:** 2
+
+**Fecha:** 2026-09-19
+
+**Preguntas realizadas:** ninguna — el usuario no respondió la pregunta
+pendiente sobre `git push` al cierre del Prompt 1 y pidió avanzar
+directamente a la Fase 2, así que se interpretó como preferencia por avanzar
+rápido. Las decisiones de diseño de esta fase (parámetros del espacio de
+claves, tamaño de la muestra de auditoría) se tomaron de forma autónoma y se
+documentan aquí y en `README.md` para que el usuario las revise y corrija si
+lo desea.
+
+**Decisiones/supuestos tomados sin bloquear el avance:**
+
+- Reto 1a (espacio de claves): alfabeto alfanumérico `N = 62`, longitud
+  `L = 8` (política de contraseñas típica, no viene del dataset).
+- Reto 1a (enlace con los datos): se usó el tiempo medio de
+  `t_respuesta_h` del módulo `auth` como tiempo ilustrativo por intento de
+  fuerza bruta, dejando explícito que es un ejercicio de escala y no una
+  medición real de ataque.
+- Reto 1b (espacio de logs): se usó el módulo con más eventos (`auth`,
+  n = 930) y un tamaño de muestra de auditoría `m = 3`, elegido como ejemplo
+  razonable para ilustrar combinación vs. variación.
+- Reto 2 (probabilidad total): se filtró a un único subconjunto sin `NA` en
+  `modulo` ni `incidente_real` para calcular `P(modulo)` y
+  `P(incidente | modulo)` sobre la misma base, de modo que la identidad de
+  probabilidad total cuadre exactamente.
+
+**Hallazgo y corrección durante esta fase:**
+
+Al calcular el tiempo medio de `t_respuesta_h` para el Reto 1a se obtuvo una
+media de 2143 horas, un valor incoherente con los datos crudos (que son de
+una sola cifra). Se investigó y se encontró un **segundo valor centinela no
+mencionado en `CLAUDE.md`**: `t_respuesta_h == 99999` (64 filas), análogo al
+`999999` ya tratado en `tam_commit`. Se corrigió
+`scripts/01_limpieza_datos.R` para tratarlo también como atípico → `NA`, se
+volvió a ejecutar la Fase 1 completa y luego la Fase 2 con los datos
+corregidos (tiempo medio de `auth` pasó de 2143 h a 6.33 h, un valor
+coherente).
+
+**Resumen de lo realizado (Fase 2):**
+
+- [`scripts/02_combinatoria_probabilidad.R`](scripts/02_combinatoria_probabilidad.R):
+  - Reto 1a: tamaño del espacio de claves (variación con repetición),
+    probabilidad de acertar en un intento, y una estimación ilustrativa del
+    tiempo para agotar el espacio usando el tiempo de respuesta real de
+    `auth`.
+  - Reto 1b: combinaciones y variaciones para una muestra de auditoría de
+    logs del módulo con más eventos, con la probabilidad de obtener una
+    muestra particular.
+  - Reto 2: `P(incidente_real | alerta)` por cada valor de `alerta`, y
+    probabilidad total de incidente particionando por `modulo`, verificada
+    contra el cálculo directo.
+- Resultados exportados a `resultados/reto1_combinatoria.csv`,
+  `resultados/reto2_condicional_alerta.csv` y
+  `resultados/reto2_probabilidad_total_modulo.csv`.
+- README.md actualizado con la sección "Fase 2" documentando espacio
+  muestral, técnica elegida, orden/reemplazo y la relación con la
+  probabilidad para cada reto, según lo pedido en `CLAUDE.md`.
+
+**Resultados numéricos clave:**
+
+- `P(incidente_real | alerta = TRUE) = 0.3807`;
+  `P(incidente_real | alerta = FALSE) = 0.0055`.
+- `P(incidente)` por probabilidad total (partición por `modulo`) = `0.0562`,
+  igual al cálculo directo.
+- Espacio de claves `VR(62, 8) ≈ 2.18×10^14`; `C(930, 3) = 133 627 360`;
+  `V(930, 3) = 801 764 160`.

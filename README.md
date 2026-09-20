@@ -85,4 +85,56 @@ Problemas detectados en `eventos_seguridad.csv` y cómo se resolvieron en
   sea una clave primaria limpia); se deja la columna `id_duplicado` para que
   las fases de combinatoria/probabilidad decidan si filtrar o no.
 
+## Fase 2 — Combinatoria y probabilidad
+
+Script: [`scripts/02_combinatoria_probabilidad.R`](scripts/02_combinatoria_probabilidad.R)
+(requiere haber corrido antes `01_limpieza_datos.R`). Resultados en `resultados/`.
+
+### Reto 1a — Espacio de claves (ataque de fuerza bruta a `auth`)
+
+- **Espacio muestral:** todas las contraseñas de longitud `L = 8` formadas con
+  un alfabeto alfanumérico de `N = 62` caracteres (supuesto de política de
+  contraseñas).
+- **Técnica:** variación con repetición — importa el orden (`ab12` ≠ `12ab`)
+  y hay reemplazo (un carácter puede repetirse). `VR(n, r) = n^r ≈ 2.18×10^14`.
+- **Probabilidad:** cada contraseña es un resultado igual de probable, por lo
+  que `P(acertar en un intento) = 1 / VR(n, r) ≈ 4.58×10^-15`.
+- **Enlace con los datos:** usando el tiempo medio real de respuesta del
+  módulo `auth` (≈ 6.3 h, ya limpio en Fase 1) como tiempo ilustrativo por
+  intento, agotar el espacio de claves tomaría del orden de `1.6×10^11` años
+  — un ejercicio de escala, no una medición real de fuerza bruta.
+
+### Reto 1b — Espacio de logs (muestra de auditoría del módulo con más eventos)
+
+- **Espacio muestral:** subconjuntos de tamaño `m = 3` sobre los `n = 930`
+  eventos del módulo `auth` (el de mayor actividad).
+- **Técnica:** combinación sin repetición — no importa el orden de la
+  muestra y no se audita el mismo evento dos veces. `C(930, 3) = 133 627 360`.
+- Se contrasta con la variación `V(930, 3) = 801 764 160` (si el orden de
+  revisión importara, ej. un reporte secuencial).
+- **Probabilidad:** `P(una muestra particular) = 1 / C(n, m) ≈ 7.48×10^-9`.
+
+### Reto 2 — Probabilidad condicional y probabilidad total
+
+- `P(incidente_real | alerta = TRUE) = 0.3807`
+- `P(incidente_real | alerta = FALSE) = 0.0055`
+  → una alerta activa multiplica por ~69 la probabilidad de que el incidente
+  sea real, evidencia de que `alerta` es informativa (no independiente de
+  `incidente_real`).
+- Probabilidad total de incidente, partiendo el espacio muestral por
+  `modulo` (partición: `api`, `auth`, `db`, `ui`):
+  `P(incidente) = Σ P(incidente | modulo) · P(modulo) = 0.0562`,
+  verificado contra el cálculo directo sobre los mismos datos (diferencia
+  ≈ 0, solo error de punto flotante).
+
+### Corrección a la Fase 1 detectada durante la Fase 2
+
+Al calcular el tiempo medio de `t_respuesta_h` para el Reto 1a apareció una
+media de **2143 horas**, inconsistente con los valores de una sola cifra
+observados en el CSV crudo. Se encontró un segundo valor centinela no
+documentado en `CLAUDE.md`: **`t_respuesta_h == 99999`** (64 filas), análogo
+al `999999` de `tam_commit`. Se corrigió `01_limpieza_datos.R` para tratarlo
+también como atípico → `NA` (ahora `t_respuesta_h_atipico` marca 111 filas en
+vez de 47) y se volvió a generar `datos/procesados/`.
+
 Detalle completo de decisiones y preguntas en [`bitacora.md`](bitacora.md).

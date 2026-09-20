@@ -86,9 +86,10 @@ datos_limpios <- datos_crudos |>
     tam_commit_atipico = tam_commit < 0 | tam_commit == 999999,
     tam_commit = if_else(tam_commit_atipico, NA_real_, tam_commit),
     # t_respuesta_h llega como texto, a veces entre comillas con coma decimal
-    # (ej. "3,9"). Un tiempo de respuesta negativo tampoco es valido.
+    # (ej. "3,9"). Un tiempo de respuesta negativo o el centinela 99999
+    # (analogo al 999999 de tam_commit) tampoco son validos.
     t_respuesta_h = as.numeric(str_replace(t_respuesta_h, ",", ".")),
-    t_respuesta_h_atipico = t_respuesta_h < 0,
+    t_respuesta_h_atipico = t_respuesta_h < 0 | t_respuesta_h == 99999,
     t_respuesta_h = if_else(t_respuesta_h_atipico, NA_real_, t_respuesta_h)
   ) |>
   mutate(
