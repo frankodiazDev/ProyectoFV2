@@ -250,3 +250,43 @@ desfase, el contenido real de esta fase).
 **Resultado:** las diferencias entre lo analítico y lo simulado fueron del
 orden de `10^-4`–`10^-3`, y el valor analítico cayó dentro del intervalo de
 95 % de las réplicas → el modelo se concluye **coherente y robusto**.
+
+---
+
+## Prompt 5
+
+**Prompt textual:**
+> avanza con la fase 5
+
+**Número de prompt:** 5
+
+**Fecha:** 2026-09-19
+
+**Preguntas realizadas:** ninguna.
+
+**Resumen de lo realizado (Fase 5):**
+
+- [`informes/informe_final.Rmd`](informes/informe_final.Rmd): informe único
+  en R Markdown que consolida introducción, Fase 1 (limpieza), Fase 2
+  (combinatoria y probabilidad), Fase 3 (Bayes y sensibilidad del prior),
+  Fase 4 (Monte Carlo), conclusiones generales, limitaciones/supuestos a
+  defender, un **guion de defensa** con 4 preguntas anticipadas y sus
+  respuestas, y la sección de reproducibilidad. Lee los resultados ya
+  guardados en `resultados/*.csv` y las imágenes `resultados/*.png` en vez
+  de recalcular todo, para que el informe siempre muestre exactamente los
+  mismos números documentados en las fases anteriores.
+- Se detectaron y corrigieron varios chunks de código R inline (`` `r ... ` ``)
+  mal formados (texto literal mezclado dentro de los backticks del código),
+  que habrían roto el render; se corrigieron y se verificó el HTML resultado
+  con `grep` para confirmar que no quedaron fragmentos de código sin evaluar.
+- Se verificó que el proyecto renderiza de extremo a extremo con
+  `rmarkdown::render()` usando el pandoc incluido con la instalación local
+  de RStudio (no fue necesario instalar nada adicional), generando
+  `informes/informe_final.html`.
+- README.md actualizado con la sección "Fase 5" y las instrucciones para
+  renderizar el informe.
+
+**Pendiente para el usuario antes de entregar:** reemplazar el marcador
+`[Tu nombre completo aquí]` en el encabezado del `.Rmd` por el nombre real
+del estudiante (no se adivinó un nombre a partir del usuario de Git/GitHub
+para evitar poner un dato incorrecto en un documento académico).

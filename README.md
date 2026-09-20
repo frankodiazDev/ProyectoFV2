@@ -243,4 +243,22 @@ Carlo reproduce los resultados del Teorema de Bayes de la Fase 3 dentro del
 margen esperado por variabilidad de muestreo, tanto en una corrida grande
 como en la distribución de muchas réplicas más pequeñas.
 
+## Fase 5 — Informe final y preparación de la defensa
+
+[`informes/informe_final.Rmd`](informes/informe_final.Rmd) consolida las
+Fases 1-4 en un único documento reproducible (introducción, limpieza,
+combinatoria, probabilidad, Bayes, Monte Carlo, conclusiones y un guion de
+defensa con preguntas anticipadas). Lee los resultados ya generados en
+`resultados/` y los datos limpios de `datos/procesados/`, así que hay que
+correr los scripts 01-04 al menos una vez antes de renderizarlo.
+
+Para generar el HTML:
+
+```r
+rmarkdown::render("informes/informe_final.Rmd")
+```
+
+(o el botón *Knit* en RStudio). Antes de entregar, reemplaza el marcador
+`[Tu nombre completo aquí]` en el encabezado por tu nombre real.
+
 Detalle completo de decisiones y preguntas en [`bitacora.md`](bitacora.md).
