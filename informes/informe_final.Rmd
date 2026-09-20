@@ -1,6 +1,6 @@
 ---
 title: "Proyecto Integrador de Probabilidades — Detección de incidentes de seguridad"
-author: "[Tu nombre completo aquí]"
+author: "[FrancoDiaz]"
 date: "`r Sys.Date()`"
 output:
   html_document:
