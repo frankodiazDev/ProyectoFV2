@@ -1,0 +1,12 @@
+metrica,valor
+n_simulacion_unica,200000
+n_replica,2000
+r_replicas,1000
+media_replicas,0.45084751840514886
+sd_replicas,0.032428271711998156
+error_estandar_media,0.0010254719919272199
+ic95_inferior,0.38536374194910783
+ic95_superior,0.512823275862069
+valor_analitico,0.45104895104895104
+diferencia_media_analitico,2.0143264380217962e-4
+coherente,1

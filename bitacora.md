@@ -204,3 +204,49 @@ esperaba, es fácil de ajustar porque todo el cálculo ya está en el script.
 - `P(incidente | veredicto negativo) = 0.0062`.
 - `P(incidente|alerta) = 0.3807` ≠ `P(alerta|incidente) = 0.9130` ≠
   correlación `0.5567`.
+
+---
+
+## Prompt 4
+
+**Prompt textual:**
+> sí, avanza con la fase 4
+
+**Número de prompt:** 4
+
+**Fecha:** 2026-09-19
+
+**Preguntas realizadas:** ninguna. Siguiendo la misma lógica de títulos
+usada para la Fase 3, la Fase 4 se implementó como su título indica:
+"Validación mediante simulación Monte Carlo en R contrastando los
+resultados analíticos con la simulación" (los sub-puntos de simulación que
+`CLAUDE.md` lista bajo "Fase 5" son, según esa misma interpretación de
+desfase, el contenido real de esta fase).
+
+**Resumen de lo realizado (Fase 4):**
+
+- [`scripts/04_montecarlo.R`](scripts/04_montecarlo.R): lee las tasas y el
+  valor analítico de Bayes desde `resultados/reto3_resumen_bayes.csv`
+  (generado en la Fase 3) en vez de recalcularlos, para comparar siempre
+  contra el mismo número ya documentado.
+  - Simulación grande (N = 200 000) del mecanismo generador
+    incidente → veredicto, comparando `P(incidente)`,
+    `P(veredicto positivo)`, `P(incidente|positivo)` y
+    `P(incidente|negativo)` simulados contra sus valores analíticos.
+  - Gráfico de convergencia de la estimación acumulada de
+    `P(incidente|positivo)` a medida que se acumulan casos simulados.
+  - 1000 réplicas de N = 2000 casos para estimar la variabilidad del
+    estimador Monte Carlo (media, desviación estándar, IC 95 %) y verificar
+    formalmente que el valor analítico cae dentro del rango esperado por
+    puro muestreo.
+  - Conclusión automática (impresa en consola y guardada) de si el modelo es
+    coherente, comparando la diferencia media-analítico contra 2 veces el
+    error estándar de las réplicas.
+- Resultados exportados a `resultados/reto4_comparacion_analitico_simulado.csv`,
+  `resultados/reto4_resumen_replicas.csv`,
+  `resultados/reto4_convergencia.png` y `resultados/reto4_distribucion_replicas.png`.
+- README.md actualizado con la sección "Fase 4".
+
+**Resultado:** las diferencias entre lo analítico y lo simulado fueron del
+orden de `10^-4`–`10^-3`, y el valor analítico cayó dentro del intervalo de
+95 % de las réplicas → el modelo se concluye **coherente y robusto**.

@@ -199,4 +199,48 @@ medida que el prior crece. Esto muestra que la conclusión de Bayes depende
 fuertemente de qué tan bien estimado esté el prior cuando los incidentes son
 poco frecuentes.
 
+## Fase 4 — Validación por simulación Monte Carlo
+
+Script: [`scripts/04_montecarlo.R`](scripts/04_montecarlo.R) (requiere haber
+corrido antes `03_bayes.R`, ya que reutiliza sus tasas estimadas y su valor
+analítico de Bayes). Resultados en `resultados/reto4_*` y dos gráficos.
+
+Se simulan casos con el mismo mecanismo asumido al aplicar Bayes: primero se
+sortea si hay incidente (`Bernoulli(prior)`), y luego, condicionado a eso, si
+el detector marca positivo (`Bernoulli(sensibilidad)` o
+`Bernoulli(falsos positivos)`). La semilla fija (`2026`, definida en
+`00_configuracion.R`) hace reproducible la simulación.
+
+**Una corrida grande (N = 200 000):**
+
+| cantidad | analítico | simulado | diferencia |
+|---|---|---|---|
+| P(incidente_real) | 0.0562 | 0.0561 | 0.0001 |
+| P(veredicto = positivo) | 0.1124 | 0.1123 | 0.0002 |
+| P(incidente \| positivo) | 0.4510 | 0.4520 | 0.0014 |
+| P(incidente \| negativo) | 0.0062 | 0.0060 | 0.0002 |
+
+Todas las diferencias son del orden de `10^-4`–`10^-3`, consistentes con el
+error esperado de muestreo para ese tamaño de N.
+
+**Convergencia:** graficando la estimación acumulada de
+`P(incidente | positivo)` a medida que se acumulan casos simulados con
+veredicto positivo, la curva se estabiliza rápido alrededor del valor
+analítico (`resultados/reto4_convergencia.png`).
+
+**Variabilidad del estimador (1000 réplicas de N = 2000 casos):**
+
+- Media de las réplicas: `0.4508`; desviación estándar: `0.0324`.
+- Intervalo 95 % (percentiles) de las réplicas: `[0.3854, 0.5128]`.
+- El valor analítico (`0.4510`) cae dentro de ese intervalo, y
+  `|media_réplicas − analítico| = 0.0002`, muy por debajo de `2×` el error
+  estándar de la media (`0.0021`).
+- `resultados/reto4_distribucion_replicas.png` muestra el histograma de las
+  1000 réplicas, centrado casi exactamente en el valor analítico.
+
+**Conclusión:** el modelo es **coherente y robusto** — la simulación Monte
+Carlo reproduce los resultados del Teorema de Bayes de la Fase 3 dentro del
+margen esperado por variabilidad de muestreo, tanto en una corrida grande
+como en la distribución de muchas réplicas más pequeñas.
+
 Detalle completo de decisiones y preguntas en [`bitacora.md`](bitacora.md).
