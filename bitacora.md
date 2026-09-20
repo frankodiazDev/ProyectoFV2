@@ -148,3 +148,59 @@ coherente).
   igual al cálculo directo.
 - Espacio de claves `VR(62, 8) ≈ 2.18×10^14`; `C(930, 3) = 133 627 360`;
   `V(930, 3) = 801 764 160`.
+
+---
+
+## Prompt 3
+
+**Prompt textual:**
+> la fase 3
+
+**Número de prompt:** 3
+
+**Fecha:** 2026-09-19
+
+**Preguntas realizadas:** ninguna. `CLAUDE.md` lista los sub-puntos de la
+Fase 3 con contenido que en realidad corresponde a la Fase 2 (estimar
+P(incidente|alerta), probabilidad total por módulo — ya hechos), y los
+sub-puntos que describen Bayes y sensibilidad del prior aparecen bajo el
+título "Fase 4". Se interpretó esto como un desfase de una fila en la lista
+de sub-puntos del documento original (cada bloque de bullets quedó bajo el
+título de la fase siguiente) y se usó el **título** de cada fase como fuente
+de verdad: la Fase 3 se implementó como "Teorema de Bayes para actualizar
+creencias según el veredicto del detector y análisis de sensibilidad del
+prior", que es exactamente el título que le da `CLAUDE.md`. Se avanzó sin
+preguntar, seguido de la preferencia de velocidad mostrada por el usuario en
+el prompt anterior; si la interpretación no es la que el usuario/profesor
+esperaba, es fácil de ajustar porque todo el cálculo ya está en el script.
+
+**Resumen de lo realizado (Fase 3):**
+
+- [`scripts/03_bayes.R`](scripts/03_bayes.R):
+  - Tabla de confusión `incidente_real x veredicto` sobre las 2545 filas
+    completas.
+  - Estimación desde los datos de: prior `P(incidente)`, sensibilidad
+    `P(positivo|incidente)` y tasa de falsos positivos `P(positivo|NO incidente)`.
+  - Teorema de Bayes para `P(incidente|veredicto positivo)` y
+    `P(incidente|veredicto negativo)`, cada uno verificado contra el cálculo
+    directo sobre los datos (coinciden exactamente).
+  - Sección explícita distinguiendo `P(incidente|alerta)` de
+    `P(alerta|incidente)` y de la correlación de Pearson entre ambas
+    variables, con explicación de por qué las tres difieren.
+  - Análisis de sensibilidad del prior: tabla con 7 priors de referencia y
+    gráfico (`resultados/fase3_sensibilidad_prior.png`) con el prior real
+    marcado, mostrando que el posterior es más sensible al prior cuando este
+    es bajo.
+- Se corrigió un detalle visual del gráfico (etiqueta del prior se salía del
+  área del panel por estar rotada) reposicionándola en horizontal.
+- Resultados exportados a `resultados/reto3_tabla_confusion.csv`,
+  `resultados/reto3_sensibilidad_prior.csv`, `resultados/reto3_resumen_bayes.csv`.
+- README.md actualizado con la sección "Fase 3".
+
+**Resultados numéricos clave:**
+
+- Sensibilidad del detector = 0.9021; tasa de falsos positivos = 0.0654.
+- `P(incidente | veredicto positivo) = 0.451` (vs. prior 0.0562, ×8).
+- `P(incidente | veredicto negativo) = 0.0062`.
+- `P(incidente|alerta) = 0.3807` ≠ `P(alerta|incidente) = 0.9130` ≠
+  correlación `0.5567`.

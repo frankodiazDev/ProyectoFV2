@@ -1,0 +1,12 @@
+metrica,valor
+prior_incidente,0.05618860510805501
+sensibilidad,0.9020979020979021
+tasa_falsos_positivos,0.06536219816819318
+p_positivo,0.11237721021611002
+p_incidente_dado_positivo_bayes,0.45104895104895104
+p_incidente_dado_positivo_directo,0.45104895104895104
+p_incidente_dado_negativo_bayes,0.0061974324922532105
+p_incidente_dado_negativo_directo,0.00619743249225321
+p_incidente_dado_alerta,0.3806646525679758
+p_alerta_dado_incidente,0.9130434782608695
+correlacion_alerta_incidente,0.5567064864432547

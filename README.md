@@ -137,4 +137,66 @@ al `999999` de `tam_commit`. Se corrigió `01_limpieza_datos.R` para tratarlo
 también como atípico → `NA` (ahora `t_respuesta_h_atipico` marca 111 filas en
 vez de 47) y se volvió a generar `datos/procesados/`.
 
+## Fase 3 — Teorema de Bayes y sensibilidad del prior
+
+Script: [`scripts/03_bayes.R`](scripts/03_bayes.R). Resultados en `resultados/`
+(`reto3_*.csv` y `fase3_sensibilidad_prior.png`).
+
+Se define `A = incidente_real` (la creencia a actualizar) y
+`B = veredicto = positivo` (la evidencia observada del detector).
+
+- **Prior** `P(incidente_real) = 0.0562` (igual al de la Fase 2, misma base
+  de datos filtrada).
+- **Sensibilidad** `P(veredicto=positivo | incidente) = 0.9021` — el
+  detector marca positivo el 90 % de las veces que hay un incidente real.
+- **Tasa de falsos positivos** `P(veredicto=positivo | NO incidente) = 0.0654`.
+- **Bayes:** `P(incidente | veredicto=positivo) = 0.451`, idéntico al valor
+  calculado directo sobre los datos (diferencia ≈ 0) — confirma que la
+  fórmula de Bayes es consistente con la evidencia empírica.
+- `P(incidente | veredicto=negativo) = 0.0062`: un veredicto negativo baja
+  la creencia de incidente por debajo del prior.
+- **Interpretación:** el prior sube de `0.0562` a `0.451` al observar un
+  veredicto positivo (×8), pero **sigue sin superar el 50 %** — un solo
+  veredicto positivo no basta para "creer" que hay un incidente, porque el
+  incidente real es raro (prior bajo) y el detector todavía genera falsos
+  positivos.
+
+### P(A|B) vs P(B|A) vs correlación
+
+Usando `alerta` e `incidente_real` (de la Fase 2):
+
+- `P(incidente_real | alerta=TRUE) = 0.3807`
+- `P(alerta=TRUE | incidente_real) = 0.9130`
+- `Correlación de Pearson(alerta, incidente_real) = 0.5567`
+
+Los tres números son distintos y responden preguntas distintas: el primero
+es "si hay alerta, ¿qué tan probable es que sea un incidente real?"
+(relevante para decidir si investigar una alerta); el segundo es "si hay un
+incidente real, ¿qué tan seguido se activó la alerta?" (relevante para medir
+la cobertura del sistema); la correlación es una única medida simétrica de
+asociación lineal que no distingue cuál variable "causa" o "predice" a la
+otra.
+
+### Análisis de sensibilidad del prior
+
+Con la sensibilidad y la tasa de falsos positivos fijas (estimadas de los
+datos), se recalculó el posterior `P(incidente | positivo)` variando el
+prior entre 0.001 y 0.6 (`resultados/fase3_sensibilidad_prior.png`):
+
+| prior | posterior |
+|---|---|
+| 0.01 | 0.122 |
+| 0.02 | 0.220 |
+| 0.0562 (observado) | 0.451 |
+| 0.10 | 0.605 |
+| 0.20 | 0.775 |
+| 0.30 | 0.855 |
+| 0.50 | 0.932 |
+
+La curva es cóncava: el posterior es muy sensible a cambios en el prior
+cuando este es bajo (el rango típico de incidentes reales), y se aplana a
+medida que el prior crece. Esto muestra que la conclusión de Bayes depende
+fuertemente de qué tan bien estimado esté el prior cuando los incidentes son
+poco frecuentes.
+
 Detalle completo de decisiones y preguntas en [`bitacora.md`](bitacora.md).

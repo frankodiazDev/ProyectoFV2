@@ -1,0 +1,5 @@
+incidente_real,veredicto,n
+FALSE,negativo,2245
+FALSE,positivo,157
+TRUE,negativo,14
+TRUE,positivo,129
